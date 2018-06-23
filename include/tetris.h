@@ -1,3 +1,14 @@
+#ifndef __TETRIS_H__
+#define __TETRIS_H__
+
+/*
+ * file tetris/include/tetris.h
+ * author xiaoguodong 1799553128@qq.com
+ * date 2018/6/15
+ * brief tetris
+ *
+ * */
+
 #include <keyboard.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -59,3 +70,4 @@ void exit_game();
 void destroy_game();
 void surprise();
 
+#endif

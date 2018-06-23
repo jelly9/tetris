@@ -1,4 +1,11 @@
-//#include <tetris.h>
+/*
+ * file tetris/src/tetris.c
+ * author xiaoguodong 1799553128@qq.com
+ * date 2018/6/15
+ * brief tetris
+ *
+ * */
+
 #include <tetris.h>
 
 //绘制块
@@ -26,24 +33,14 @@ static void menu(char key){
     printf("\n+--------------------------+\n");
     printf("|    welcome to teleis     |\n");
     printf("|                          |\n");
-    switch(key){
-    case 1:
-        printf("|   -> 1.start.            |\n");
-        printf("|      2.help.             |\n");
-        printf("|      3.exit.             |\n");
-        break;                              
-    case 2:                                 
-        printf("|      1.start.            |\n");
-        printf("|   -> 2.help.             |\n");
-        printf("|      3.exit.             |\n");
-        break;                              
-    case 3:                                 
-        printf("|      1.start.            |\n");
-        printf("|      2.help.             |\n");
-        printf("|   -> 3.exit.             |\n");
-        break;
-    default:
-        break;
+    char *select[3] = {"1.start.", "2.help.", "3.exit."};
+    for(int i= 1; i <= 3; ++i){
+        printf("|     ");
+        if(key == i)
+            printf("->");
+        else
+            printf("  ");
+        printf("%-8s           |\n", select[i-1]);
     }
     printf("|                          |\n");
     printf("+--------------------------+\n");
@@ -74,11 +71,6 @@ static void draw_back(){
     draw_shape(&g_blank_shape, &temp_pos, BC);
     draw_shape(&shape_arr[g_shape_next_idx], &temp_pos, FC);
 
-    //显示时间
-    time_t t = time(0);                                                                  
-    struct tm ptm;                                                                       
-    localtime_r(&t, &ptm);                                                               
-    printf("\033[%d;%dH\033[33m [time %d:%d:%d] \033[0m", 12, 28, ptm.tm_hour, ptm.tm_min, ptm.tm_sec);
 }
 
 //设置背景，即修改g_backgroud
@@ -97,6 +89,7 @@ static void set_back(struct shape *sp, struct pos *p){
 static int can_move(struct shape *sp, struct pos *p){
     for(int i = 0; i < 5; i++){
         for(int j = 0; j < 5; j++){
+            //满足下列条件的就不能移动
             if(sp->s[i][j] == 0) continue;
             if(p->x+j<0 || p->x+j>=W) return 0;
             if(p->y+i>=H) return 0;
@@ -106,7 +99,7 @@ static int can_move(struct shape *sp, struct pos *p){
     return 1;
 }
 
-//shape旋转90度
+//shape顺时针旋转90度
 static struct shape turn90(struct shape *sp){
     struct shape res;
     for(int i = 0; i < 5; i++){
@@ -117,6 +110,7 @@ static struct shape turn90(struct shape *sp){
     return res;
 }
 
+//消除一行
 static void clean_line(){
     int count = 0;
     for(int i = 0; i < H; i++){
@@ -152,15 +146,19 @@ static int tetris_timer(struct pos *p){
     }else{//否则说明到底了
         set_back(&shape_arr[g_shape_idx], p);
         clean_line();//判断是否需要消行
-        is_over();
-        //g_shape_idx = 1;
-        //g_shape_next_idx = 1;
+        is_over();//判断是否游戏结束
         g_shape_idx = g_shape_next_idx;
         g_shape_next_idx = rand()%7;
         draw_back();
         p->x = 4,p->y = 0;
         FC = rand()%6+1;
     }
+
+    //显示时间
+    time_t t = time(0);                                                                  
+    struct tm ptm;                                                                       
+    localtime_r(&t, &ptm);                                                               
+    printf("\033[%d;%dH\033[33m [time %d:%d:%d] \033[0m", 12, 28, ptm.tm_hour, ptm.tm_min, ptm.tm_sec);
 }
 
 static void tetris(struct pos *p){
@@ -169,14 +167,17 @@ static void tetris(struct pos *p){
     struct pos temp_right= {p->x+1, p->y};
     struct pos temp_down = {p->x, p->y+1};
     if(is_left(key) && can_move(&shape_arr[g_shape_idx], &temp_left)){//向左移动
+        //下做移动
         draw_shape(&shape_arr[g_shape_idx], p, BC);
         p->x--;
         draw_shape(&shape_arr[g_shape_idx], p, FC);
     }else if(is_right(key) && can_move(&shape_arr[g_shape_idx], &temp_right)){//向右移动
+        //向右移动
         draw_shape(&shape_arr[g_shape_idx], p, BC);
         p->x++;
         draw_shape(&shape_arr[g_shape_idx], p, FC);
     }else if(is_up(key)){//旋转
+        //旋转
         draw_shape(&shape_arr[g_shape_idx], p, BC);
         shape_arr[g_shape_idx] = turn90(&shape_arr[g_shape_idx]);
         if(!can_move(&shape_arr[g_shape_idx], p)){
@@ -186,6 +187,7 @@ static void tetris(struct pos *p){
         }
         draw_shape(&shape_arr[g_shape_idx], p, FC);
     }else if(is_down(key) &&can_move(&shape_arr[g_shape_idx], &temp_down)){//加速向下
+        //加速向下
         draw_shape(&shape_arr[g_shape_idx], p, BC);
         p->y++;
         draw_shape(&shape_arr[g_shape_idx], p, FC);
@@ -201,6 +203,24 @@ void handler_int(int arg){
     (void)arg;
     destroy_game();
     exit(0);
+}
+
+void surprise(){
+    int key, n;
+    for(;;){
+        n = rand()%7+1;
+        printf("                          \033[3%dmGood\033[0m", n);
+        n = rand()%7+1;
+        printf("    \033[3%dmLuck\033[0m", n);
+        n = rand()%7+1;
+        printf("    \033[3%dmTo\033[0m", n);
+        n = rand()%7+1;
+        printf("    \033[3%dmYou\033[0m\n\n", n);
+        key = get_key();
+        if(is_esc(key)){
+            return;
+        }
+    }
 }
 
 void start_game(){
@@ -228,24 +248,6 @@ void start_game(){
     }
 }
 
-void surprise(){
-    int key, n;
-    for(;;){
-        n = rand()%8;
-        printf("                          \033[3%dmGood\033[0m", n);
-        n = rand()%8;
-        printf("    \033[3%dmLuck\033[0m", n);
-        n = rand()%8;
-        printf("    \033[3%dmTo\033[0m", n);
-        n = rand()%8;
-        printf("    \033[3%dmYou\033[0m\n\n", n);
-        key = get_key();
-        if(is_esc(key)){
-            return;
-        }
-    }
-}
-
 void help(){
     surprise();
 }
@@ -270,6 +272,7 @@ void init_game(){
 
 void destroy_game(){
     printf("\033[?25h");
+    printf("\033[0m");
     recover_keyboard();
     system("clear");
 }
@@ -283,7 +286,6 @@ int main()
     int select = 1;
     int key;
     do{
-
         usleep(1000*150);
         system("clear");
         menu(select);
@@ -302,4 +304,3 @@ int main()
     destroy_game();
     return 0;
 }
-

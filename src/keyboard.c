@@ -7,13 +7,21 @@
 struct termios tcsave;
 int flsave;
 
-#define UP    0x415b1b
-#define DOWN  0x425b1b
-#define LEFT  0x445b1b
-#define RIGHT 0x435b1b
-#define ENTER 0xa
-#define ESC   0x1b
-#define SPACE 0x20
+#define UP      0x415b1b
+#define DOWN    0x425b1b
+#define LEFT    0x445b1b
+#define RIGHT   0x435b1b
+#define ENTER   0xa
+#define ESC     0x1b
+#define SPACE   0x20
+#define W       0x57
+#define A       0x41
+#define S       0x53
+#define D       0x44
+#define w       0x77
+#define a       0x61
+#define s       0x73
+#define d       0x64
 
 int init_keyboard(void)
 {
@@ -69,19 +77,19 @@ int get_key(void)
 }
 int is_up(int key)
 {   
-    return key == UP;
+    return key == UP || key == w || key == W;
 }
 int is_down(int key)
 {   
-    return key == DOWN;
+    return key == DOWN || key == s || key == S;
 }
 int is_left(int key)
 {   
-    return key == LEFT;
+    return key == LEFT || key == a || key == A;
 }
 int is_right(int key)
 {   
-    return key == RIGHT;
+    return key == RIGHT || key == d | key == D;
 }
 int is_enter(int key)   
 {
@@ -95,7 +103,7 @@ int is_space(int key)
 {
     return key == SPACE;
 }
-#if 1
+#ifdef DEBUG
 int main(void)
 {
     int key, ret;
