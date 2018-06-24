@@ -1,8 +1,9 @@
 INCLUDE=../include
+CFLAGS= -Wall -g
 CC=gcc
 
 tetris:tetris.o keyboard.o
-	$(CC) -o $@ $^
+	$(CC) -o $@ $^ $(CFLAGS)
 
 %.o:%.c
 	$(CC) -o $@ $< -c -I$(INCLUDE)

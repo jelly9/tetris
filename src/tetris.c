@@ -30,22 +30,34 @@ static void menu(char key){
     for(int i = 0; i < 14; i++){
         draw_element(i, 0, 5);
     }
-    printf("\n+--------------------------+\n");
-    printf("|    welcome to teleis     |\n");
-    printf("|                          |\n");
+    printf("\n");
+    draw_element(0,1,5);
+    printf("    welcome to teleis     ");
+    draw_element(13,1,5);
+    printf("\n");
+    draw_element(0,2,5);
+    printf("                          ");
+    draw_element(13,2,5);
+    printf("\n");
     char *select[3] = {"1.start.", "2.help.", "3.exit."};
-    for(int i= 1; i <= 3; ++i){
-        printf("|     ");
+    int i = 1;
+    for(; i <= 3; ++i){
+        draw_element(0,i+2,5);
+        printf("     ");
         if(key == i)
             printf("->");
         else
             printf("  ");
-        printf("%-8s           |\n", select[i-1]);
+        printf("%-7s", select[i-1]);
+        draw_element(13,i+2,5);
+        printf("\n");
     }
-    printf("|                          |\n");
-    printf("+--------------------------+\n");
-    for(int i = 0; i < 14; i++){
-        draw_element(i, 9, 5);
+    i += 2;
+    draw_element(0,i,5);
+    draw_element(13,i++,5);
+    printf("\n");
+    for(int j = 0; j < 14; j++){
+        draw_element(j, i, 5);
     }
 }
 
@@ -71,6 +83,8 @@ static void draw_back(){
     draw_shape(&g_blank_shape, &temp_pos, BC);
     draw_shape(&shape_arr[g_shape_next_idx], &temp_pos, FC);
 
+    //显示时间
+    printf("\033[%d;%dH\033[33m jelly:1799553128 \033[0m", 12, 28);
 }
 
 //设置背景，即修改g_backgroud
@@ -153,12 +167,6 @@ static int tetris_timer(struct pos *p){
         p->x = 4,p->y = 0;
         FC = rand()%6+1;
     }
-
-    //显示时间
-    time_t t = time(0);                                                                  
-    struct tm ptm;                                                                       
-    localtime_r(&t, &ptm);                                                               
-    printf("\033[%d;%dH\033[33m [time %d:%d:%d] \033[0m", 12, 28, ptm.tm_hour, ptm.tm_min, ptm.tm_sec);
 }
 
 static void tetris(struct pos *p){
@@ -167,7 +175,7 @@ static void tetris(struct pos *p){
     struct pos temp_right= {p->x+1, p->y};
     struct pos temp_down = {p->x, p->y+1};
     if(is_left(key) && can_move(&shape_arr[g_shape_idx], &temp_left)){//向左移动
-        //下做移动
+        //向下移动
         draw_shape(&shape_arr[g_shape_idx], p, BC);
         p->x--;
         draw_shape(&shape_arr[g_shape_idx], p, FC);
