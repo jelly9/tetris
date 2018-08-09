@@ -1,9 +1,11 @@
-安装游戏：
- 1).make
- 2).sudo sh install.sh
+### 俄罗斯方块
 
-玩游戏:
- tetris
+- 安装游戏：
+ `.make`
+ `sudo sh install.sh`
 
-卸载游戏:
- sudo sh uninstall.sh
+- 玩游戏:
+ `tetris`
+
+- 卸载游戏:
+ `sudo sh uninstall.sh`
