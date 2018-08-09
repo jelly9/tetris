@@ -1,7 +1,8 @@
 ### 俄罗斯方块
 
 - 安装
-> `.make`
+> `make`
+
 > `sudo sh install.sh`
 
 - 玩:
