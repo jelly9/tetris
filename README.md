@@ -5,8 +5,8 @@
 
 > `sudo sh install.sh`
 
-- 玩:
+- 玩
 > `tetris`
 
-- 卸载:
+- 卸载
 > `sudo sh uninstall.sh`
